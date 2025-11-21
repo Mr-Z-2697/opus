@@ -670,10 +670,10 @@ extern "C" {
 
 /** Configures the encoder's use of dc_reject filter.
   * @hideinitializer */
-#define OPUS_SET_DC_FILTER(x) OPUS_SET_DC_FILTER_REQUEST, __opus_check_int(x)
+#define OPUS_SET_DC_FILTER(x) OPUS_SET_DC_FILTER_REQUEST, opus_check_int(x)
 /** Gets the encoder's configured dc_reject filter status.
   * @hideinitializer */
-#define OPUS_GET_DC_FILTER(x) OPUS_GET_DC_FILTER_REQUEST, __opus_check_int(x)
+#define OPUS_GET_DC_FILTER(x) OPUS_GET_DC_FILTER_REQUEST, opus_check_int(x)
 
 
 /**@}*/
