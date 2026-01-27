@@ -2001,13 +2001,8 @@ static opus_int32 opus_encode_frame_native(OpusEncoder *st, const opus_res *pcm,
          }
        }
 #endif
-#ifdef ENABLE_QEXT
-      /* FIXME: Avoid glitching when we switch qext on/off dynamically. */
-    } else if (st->dc_filter && !st->enable_qext) {
-#else
       /* FIXME: Avoid glitching when we switch dc_filter on/off dynamically. */
     } else if (st->dc_filter) {
-#endif
        dc_reject(pcm, 3, &pcm_buf[total_buffer*st->channels], st->hp_mem, frame_size, st->channels, st->Fs);
     } else {
        OPUS_COPY(&pcm_buf[total_buffer*st->channels], pcm, frame_size*st->channels);
