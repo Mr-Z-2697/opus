@@ -180,6 +180,10 @@ extern "C" {
 #define OPUS_SET_IGNORE_EXTENSIONS_REQUEST 4058
 #define OPUS_GET_IGNORE_EXTENSIONS_REQUEST 4059
 
+/* mod */
+#define OPUS_SET_DC_FILTER_REQUEST 32000
+#define OPUS_GET_DC_FILTER_REQUEST 32001
+
 /** Defines for the presence of extended APIs. */
 #define OPUS_HAVE_OPUS_PROJECTION_H
 
@@ -665,6 +669,14 @@ extern "C" {
 /** Gets the encoder's configured quality extension (QEXT).
   * @hideinitializer */
 #define OPUS_GET_QEXT(x) OPUS_GET_QEXT_REQUEST, opus_check_int_ptr(x)
+
+/** Configures the encoder's use of dc_reject filter.
+  * @hideinitializer */
+#define OPUS_SET_DC_FILTER(x) OPUS_SET_DC_FILTER_REQUEST, opus_check_int(x)
+/** Gets the encoder's configured dc_reject filter status.
+  * @hideinitializer */
+#define OPUS_GET_DC_FILTER(x) OPUS_GET_DC_FILTER_REQUEST, opus_check_int_ptr(x)
+
 
 /**@}*/
 
