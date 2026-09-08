@@ -192,12 +192,12 @@ void clt_mdct_forward(const mdct_lookup *l, kiss_fft_scalar *in, kiss_fft_scalar
          kiss_fft_cpx yc;
          kiss_twiddle_scalar t0, t1;
          kiss_fft_scalar re, im, yr, yi;
-         t0 = t[i];
-         t1 = t[N4+i];
+         t0 = t[2*i];     /* -sin */
+         t1 = t[2*i+1];   /* cos */
          re = *yp++;
          im = *yp++;
-         yr = S_MUL_SUB(re,t0,im,t1);
-         yi = S_MUL_ADD(im,t0,re,t1);
+         yr = S_MUL_SUB(re,t1,im,t0);
+         yi = S_MUL_ADD(im,t1,re,t0);
          /* For QEXT, it's best to scale before the FFT, but otherwise it's best to scale after.
             For floating-point it doesn't matter. */
 #ifdef ENABLE_QEXT
@@ -233,14 +233,14 @@ void clt_mdct_forward(const mdct_lookup *l, kiss_fft_scalar *in, kiss_fft_scalar
          kiss_fft_scalar yr, yi;
          kiss_fft_scalar t0, t1;
 #ifdef ENABLE_QEXT
-         t0 = S_MUL2(t[i], scale);
-         t1 = S_MUL2(t[N4+i], scale);
+         t0 = S_MUL2(t[2*i], scale);
+         t1 = S_MUL2(t[2*i+1], scale);
 #else
-         t0 = t[i];
-         t1 = t[N4+i];
+         t0 = t[2*i];
+         t1 = t[2*i+1];
 #endif
-         yr = S_MUL_SUB_PSR(fp->i,t1 , fp->r,t0, headroom);
-         yi = S_MUL_ADD_PSR(fp->r,t1 , fp->i,t0, headroom);
+         yr = S_MUL_SUB_PSR(fp->i,t0 , fp->r,t1, headroom);
+         yi = S_MUL_ADD_PSR(fp->r,t0 , fp->i,t1, headroom);
          *yp1 = yr;
          *yp2 = yi;
          fp++;
@@ -307,8 +307,8 @@ void clt_mdct_backward(const mdct_lookup *l, kiss_fft_scalar *in, kiss_fft_scala
          rev = *bitrev++;
          x1 = SHL32_ovflw(*xp1, pre_shift);
          x2 = SHL32_ovflw(*xp2, pre_shift);
-         yr = S_MUL_ADD(x2,t[i] , x1,t[N4+i]);
-         yi = S_MUL_SUB(x1,t[i] , x2,t[N4+i]);
+         yr = S_MUL_ADD(x2,t[2*i+1] , x1,t[2*i]);
+         yi = S_MUL_SUB(x1,t[2*i+1] , x2,t[2*i]);
          /* We swap real and imag because we use an FFT instead of an IFFT. */
          yp[2*rev+1] = yr;
          yp[2*rev] = yi;
@@ -335,22 +335,22 @@ void clt_mdct_backward(const mdct_lookup *l, kiss_fft_scalar *in, kiss_fft_scala
          /* We swap real and imag because we're using an FFT instead of an IFFT. */
          re = yp0[1];
          im = yp0[0];
-         t0 = t[i];
-         t1 = t[N4+i];
+         t0 = t[2*i];
+         t1 = t[2*i+1];
          /* We'd scale up by 2 here, but instead it's done when mixing the windows */
-         yr = S_MUL_ADD_PSR(re,t0 , im,t1, post_shift);
-         yi = S_MUL_SUB_PSR(re,t1 , im,t0, post_shift);
+         yr = S_MUL_ADD_PSR(re,t1 , im,t0, post_shift);
+         yi = S_MUL_SUB_PSR(re,t0 , im,t1, post_shift);
          /* We swap real and imag because we're using an FFT instead of an IFFT. */
          re = yp1[1];
          im = yp1[0];
          yp0[0] = yr;
          yp1[1] = yi;
 
-         t0 = t[(N4-i-1)];
-         t1 = t[(N2-i-1)];
+         t0 = t[2*(N4-i-1)];
+         t1 = t[2*(N4-i-1)+1];
          /* We'd scale up by 2 here, but instead it's done when mixing the windows */
-         yr = S_MUL_ADD_PSR(re,t0,im,t1, post_shift);
-         yi = S_MUL_SUB_PSR(re,t1,im,t0, post_shift);
+         yr = S_MUL_ADD_PSR(re,t1 , im,t0, post_shift);
+         yi = S_MUL_SUB_PSR(re,t0 , im,t1, post_shift);
          yp1[0] = yr;
          yp0[1] = yi;
          yp0 += 2;
